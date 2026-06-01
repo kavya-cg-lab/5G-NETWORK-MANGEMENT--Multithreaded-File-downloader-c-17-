@@ -22,10 +22,7 @@ The system:
 
 Below is the UML design representing system structure and class interactions:
 
-<p align="center">
-  assets/architecture.png
-</p>
-
+![System Architecture](assets/architecture.png)
 ---
 
 ## 🔄 Workflow
