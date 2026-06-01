@@ -22,7 +22,7 @@ The system:
 
 Below is the UML design representing system structure and class interactions:
 
-![System Architecture](image.png)
+![System Architecture](image(9).png)
 
 ---
 
