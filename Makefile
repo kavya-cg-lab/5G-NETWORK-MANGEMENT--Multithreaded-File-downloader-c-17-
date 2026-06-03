@@ -22,6 +22,11 @@ TEST_FILEINFO_TARGET = test_fileinfo
 TEST_VALIDATOR_SRC = tests/test_validator.cpp src/validator.cpp
 TEST_VALIDATOR_TARGET = test_validator
 
+TEST_DOWNLOADER_SRC = tests/test_downloader.cpp \
+		      src/downloader.cpp \
+                      src/chunkcalculator.cpp
+TEST_DOWNLOADER_TARGET = test_downloader
+
 # ─────────────────────────────
 # Main build
 # ─────────────────────────────
@@ -53,16 +58,26 @@ test_validator: $(TEST_VALIDATOR_TARGET)
 	./$(TEST_VALIDATOR_TARGET)
 
 $(TEST_VALIDATOR_TARGET): $(TEST_VALIDATOR_SRC)
-	$(CXX) $(CXXFLAGS) -o $(TEST_VALIDATOR_TARGET) $(TEST_VALIDATOR_SRC) $(TEST_LIBS)	
+	$(CXX) $(CXXFLAGS) -o $(TEST_VALIDATOR_TARGET) $(TEST_VALIDATOR_SRC) $(TEST_LIBS)
+
+test_downloader: $(TEST_DOWNLOADER_TARGET)
+	./$(TEST_DOWNLOADER_TARGET)
+
+$(TEST_DOWNLOADER_TARGET): $(TEST_DOWNLOADER_SRC)
+	$(CXX) $(CXXFLAGS) -o $(TEST_DOWNLOADER_TARGET) \
+	$(TEST_DOWNLOADER_SRC) $(TEST_LIBS) $(LIBS)
+		
 
 # Run all tests
-test_all: $(TEST_TARGET) $(TEST_FILEINFO_TARGET)
+test_all: $(TEST_TARGET) $(TEST_FILEINFO_TARGET) $(TEST_VALIDATOR_TARGET) $(TEST_DOWNLOADER_TARGET)
 	./$(TEST_TARGET)
 	./$(TEST_FILEINFO_TARGET)
+	./$(TEST_VALIDATOR_TARGET)
+	./$(TEST_DOWNLOADER_TARGET)
 
 
 # ─────────────────────────────
 # Clean
 # ─────────────────────────────
 clean:
-	rm -f $(TARGET) $(TEST_TARGET) $(TEST_FILEINFO_TARGET) *.tmp
+	rm -f $(TARGET) $(TEST_TARGET) $(TEST_FILEINFO_TARGET) $(TEST_VALIDATOR_TARGET) $(TEST_DOWNLOADER_TARGET) *.tmp
