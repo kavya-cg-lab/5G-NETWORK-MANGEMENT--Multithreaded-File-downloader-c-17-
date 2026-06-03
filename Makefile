@@ -19,6 +19,9 @@ TEST_LIBS = -lgtest -lgtest_main -pthread
 TEST_FILEINFO_SRC = tests/test_fileinfo.cpp src/fileinfo.cpp
 TEST_FILEINFO_TARGET = test_fileinfo
 
+TEST_VALIDATOR_SRC = tests/test_validator.cpp src/validator.cpp
+TEST_VALIDATOR_TARGET = test_validator
+
 # ─────────────────────────────
 # Main build
 # ─────────────────────────────
@@ -45,6 +48,12 @@ test_fileinfo: $(TEST_FILEINFO_TARGET)
 $(TEST_FILEINFO_TARGET): $(TEST_FILEINFO_SRC)
 	$(CXX) $(CXXFLAGS) -o $(TEST_FILEINFO_TARGET) \
 	$(TEST_FILEINFO_SRC) $(TEST_LIBS) $(LIBS)
+
+test_validator: $(TEST_VALIDATOR_TARGET)
+	./$(TEST_VALIDATOR_TARGET)
+
+$(TEST_VALIDATOR_TARGET): $(TEST_VALIDATOR_SRC)
+	$(CXX) $(CXXFLAGS) -o $(TEST_VALIDATOR_TARGET) $(TEST_VALIDATOR_SRC) $(TEST_LIBS)	
 
 # Run all tests
 test_all: $(TEST_TARGET) $(TEST_FILEINFO_TARGET)

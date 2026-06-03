@@ -8,7 +8,7 @@
 bool Validator::isValidUrl(const std::string& url) {
 
     if (url.empty()) {
-        std::cerr << "❌ Error: URL cannot be empty\n";
+        std::cerr << "Error: URL cannot be empty\n";
         return false;
     }
 
@@ -19,7 +19,7 @@ bool Validator::isValidUrl(const std::string& url) {
     );
 
     if (!std::regex_match(url, urlPattern)) {
-        std::cerr << "❌ Error: Invalid URL format\n";
+        std::cerr << "Error: Invalid URL format\n";
         std::cerr << "   Use: http://example.com/file.zip\n";
         return false;
     }
@@ -33,7 +33,7 @@ bool Validator::isValidUrl(const std::string& url) {
 bool Validator::isValidThreadCount(int threads) {
 
     if (threads < 1 || threads > 16) {
-        std::cerr << "❌ Error: Thread count must be 1-16\n";
+        std::cerr << "Error: Thread count must be 1-16\n";
         std::cerr << "   You entered: " << threads << "\n";
         return false;
     }
@@ -48,7 +48,7 @@ bool Validator::isValidThreadCount(int threads) {
 bool Validator::isValidOutputName(const std::string& name) {
 
     if (name.empty()) {
-        std::cerr << "❌ Error: Output filename cannot be empty\n";
+        std::cerr << "Error: Output filename cannot be empty\n";
         return false;
     }
 
@@ -56,7 +56,7 @@ bool Validator::isValidOutputName(const std::string& name) {
     std::string illegal = "/\\:*?\"<>|";
     for (char c : illegal) {
         if (name.find(c) != std::string::npos) {
-            std::cerr << "❌ Error: Filename has illegal character: "
+            std::cerr << "Error: Filename has illegal character: "
                       << c << "\n";
             return false;
         }
@@ -80,9 +80,9 @@ bool Validator::validateAll(const std::string& url,
     bool threadOk  = isValidThreadCount(threads);
     bool outputOk  = isValidOutputName(outputName);
 
-    if (urlOk)     std::cout << "✅ URL      : " << url << "\n";
-    if (threadOk)  std::cout << "✅ Threads  : " << threads << "\n";
-    if (outputOk)  std::cout << "✅ Output   : " << outputName << "\n";
+    if (urlOk)     std::cout << "URL      : " << url << "\n";
+    if (threadOk)  std::cout << "Threads  : " << threads << "\n";
+    if (outputOk)  std::cout << "Output   : " << outputName << "\n";
 
     std::cout << "================================\n";
 
