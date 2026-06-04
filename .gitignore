@@ -1,0 +1,17 @@
+# Build files
+*.o
+*.out
+*.exe
+
+# Qt generated
+moc_*
+ui_*.h
+
+# Temp
+.qmake.stash
+
+# Binary
+downloader
+
+# Large files
+*.zip
