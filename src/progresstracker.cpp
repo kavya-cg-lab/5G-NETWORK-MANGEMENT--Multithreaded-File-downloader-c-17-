@@ -25,10 +25,15 @@ void ProgressTracker::addBytes(size_t bytes) {
             double remaining = totalBytes - current;
             double etaSeconds = remaining > 0 ? remaining / speed : 0.0;
 
-            UIManager::showProgress(current,
-                                    totalBytes,
-                                    speed / 1024.0,
-                                    static_cast<int>(etaSeconds));
+            // Call callback if set, otherwise use terminal UI
+            if (progressCallback) {
+                progressCallback(current, totalBytes, speed / 1024.0, static_cast<int>(etaSeconds));
+            } else {
+                UIManager::showProgress(current,
+                                        totalBytes,
+                                        speed / 1024.0,
+                                        static_cast<int>(etaSeconds));
+            }
             nextReport = current + reportStep;
         }
     }
