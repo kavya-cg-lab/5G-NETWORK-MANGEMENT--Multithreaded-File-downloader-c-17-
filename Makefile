@@ -6,7 +6,8 @@ SRC = src/main.cpp \
       src/validator.cpp \
       src/fileinfo.cpp \
       src/chunkcalculator.cpp \
-      src/downloader.cpp
+      src/downloader.cpp \
+      src/filemerger.cpp
 
 TARGET = downloader
 
@@ -26,6 +27,10 @@ TEST_DOWNLOADER_SRC = tests/test_downloader.cpp \
 		      src/downloader.cpp \
                       src/chunkcalculator.cpp
 TEST_DOWNLOADER_TARGET = test_downloader
+
+TEST_FILEMERGER_SRC = tests/test_filemerger.cpp \
+		      src/filemerger.cpp
+TEST_FILEMERGER_TARGET = test_filemerger
 
 # ─────────────────────────────
 # Main build
@@ -66,18 +71,26 @@ test_downloader: $(TEST_DOWNLOADER_TARGET)
 $(TEST_DOWNLOADER_TARGET): $(TEST_DOWNLOADER_SRC)
 	$(CXX) $(CXXFLAGS) -o $(TEST_DOWNLOADER_TARGET) \
 	$(TEST_DOWNLOADER_SRC) $(TEST_LIBS) $(LIBS)
+
+test_filemerger: $(TEST_FILEMERGER_TARGET)
+	./$(TEST_FILEMERGER_TARGET)
+
+$(TEST_FILEMERGER_TARGET): $(TEST_FILEMERGER_SRC)
+	$(CXX) $(CXXFLAGS) -o $(TEST_FILEMERGER_TARGET) \
+	$(TEST_FILEMERGER_SRC) $(TEST_LIBS)	
 		
 
 # Run all tests
-test_all: $(TEST_TARGET) $(TEST_FILEINFO_TARGET) $(TEST_VALIDATOR_TARGET) $(TEST_DOWNLOADER_TARGET)
+test_all: $(TEST_TARGET) $(TEST_FILEINFO_TARGET) $(TEST_VALIDATOR_TARGET) $(TEST_DOWNLOADER_TARGET) $(TEST_FILEMERGER_TARGET)
 	./$(TEST_TARGET)
 	./$(TEST_FILEINFO_TARGET)
 	./$(TEST_VALIDATOR_TARGET)
 	./$(TEST_DOWNLOADER_TARGET)
+	./$(TEST_FILEMERGER_TARGET)
 
 
 # ─────────────────────────────
 # Clean
 # ─────────────────────────────
 clean:
-	rm -f $(TARGET) $(TEST_TARGET) $(TEST_FILEINFO_TARGET) $(TEST_VALIDATOR_TARGET) $(TEST_DOWNLOADER_TARGET) *.tmp
+	rm -f $(TARGET) $(TEST_TARGET) $(TEST_FILEINFO_TARGET) $(TEST_VALIDATOR_TARGET) $(TEST_DOWNLOADER_TARGET) $(TEST_FILEMERGER_TARGET) *.tmp

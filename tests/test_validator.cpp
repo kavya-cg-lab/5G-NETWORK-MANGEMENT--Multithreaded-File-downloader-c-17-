@@ -40,7 +40,7 @@ TEST(ValidatorTest, InvalidOutputName) {
 TEST(ValidatorTest, ValidateAllSuccess) {
     EXPECT_TRUE(
         Validator::validateAll(
-            "http://example.com/file.zip",
+            "http://speedtest.tele2.net/10GB.zip",
             4,
             "output.zip"
         )
@@ -58,7 +58,7 @@ TEST(ValidatorTest, ValidateAllFail) {
 
     EXPECT_FALSE(
         Validator::validateAll(
-            "http://example.com/file.zip",
+            "http://speedtest.tele2.net/10GB.zip",
             20,
             "output.zip"
         )
@@ -66,7 +66,7 @@ TEST(ValidatorTest, ValidateAllFail) {
 
     EXPECT_FALSE(
         Validator::validateAll(
-            "http://example.com/file.zip",
+            "http://speedtest.tele2.net/10GB.zip",
             4,
             "file/name.txt"
         )

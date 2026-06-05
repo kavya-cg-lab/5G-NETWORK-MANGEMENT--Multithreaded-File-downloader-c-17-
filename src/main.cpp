@@ -5,13 +5,14 @@
 #include "../include/fileinfo.hpp"
 #include "../include/chunkcalculator.hpp"
 #include "../include/downloader.hpp"
+#include "../include/filemerger.hpp"
 
 int main() {
 
     // ─────────────────────────────────────
     // User Input
     // ─────────────────────────────────────
-    std::string url   = "http://speedtest.tele2.net/1MB.zip";
+    std::string url   = "http://speedtest.tele2.net/10GB.zip";
     int numThreads = 4;
     std::string outputName = "myfile.zip";
 
@@ -73,6 +74,18 @@ int main() {
 
     std::cout << "\n✅ Step 4 Complete — Download Finished\n";
     std::cout << "\n Next Step: Merge chunk files\n\n";
+
+    // ─────────────────────────────────────
+// Step 5 — Merge Chunks
+// ─────────────────────────────────────
+    std::cout << "\n[STEP 5] Merging chunks...\n";
+
+    if (!FileMerger::merge(chunks, outputName)) {
+       std::cerr << "❌ Merge failed\n";
+       return 1;
+    }
+
+    std::cout << "\n✅ Step 5 Complete — File Ready\n";
 
     return 0;
 }

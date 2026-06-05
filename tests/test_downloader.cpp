@@ -5,7 +5,7 @@
 #include "chunkcalculator.hpp"
 
 TEST(DownloaderTest, SingleThreadDownload) {
-    std::string url ="http://speedtest.tele2.net/1MB.zip";
+    std::string url ="http://speedtest.tele2.net/10GB.zip";
 
     auto chunks = ChunkCalculator::calculate(100, 1);
 
@@ -24,7 +24,7 @@ TEST(DownloaderTest, SingleThreadDownload) {
 }
 
 TEST(DownloaderTest, MultiThreadDownload) {
-    std::string url = "http://speedtest.tele2.net/1MB.zip";
+    std::string url = "http://speedtest.tele2.net/10GB.zip";
 
     auto chunks = ChunkCalculator::calculate(200, 3);
 
@@ -63,7 +63,7 @@ TEST(DownloaderTest, InvalidURL) {
 }
 
 TEST(DownloaderTest, FileSizeNonZero) {
-    std::string url = "http://speedtest.tele2.net/1MB.zip";
+    std::string url = "http://speedtest.tele2.net/10GB.zip";
 
     auto chunks = ChunkCalculator::calculate(300, 2);
 
