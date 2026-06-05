@@ -55,20 +55,19 @@ void Downloader::downloadChunk(const std::string& url,
     std::cout << "⬇️ Thread " << chunk.threadId
               << " downloading (" << range << ")\n";
 
-    //CURLcode res = curl_easy_perform(curl);
+    CURLcode res = curl_easy_perform(curl);
 
-   // if (res != CURLE_OK) {
-    //    std::cerr << "❌ Thread " << chunk.threadId
-    //              << " error: "
-    //              << curl_easy_strerror(res) << "\n";
-   // } else {
-   //     std::cout << "✅ Thread " << chunk.threadId
-   //               << " finished\n";
-    //}
+    if (res != CURLE_OK) {
+        std::cerr << "❌ Thread " << chunk.threadId
+                  << " error: "
+                  << curl_easy_strerror(res) << "\n";
+    } else {
+        std::cout << "✅ Thread " << chunk.threadId
+                  << " finished\n";
+    }
 
-   // file.close();
-    //curl_easy_cleanup(curl);
-    
+    file.close();
+    curl_easy_cleanup(curl);
 }
 
 // ─────────────────────────────────────────

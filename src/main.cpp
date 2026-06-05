@@ -3,7 +3,9 @@
 
 #include "../include/validator.hpp"
 #include "../include/fileinfo.hpp"
+#include "../include/fileinfomanager.hpp"
 #include "../include/chunkcalculator.hpp"
+#include "../include/chunkmanager.hpp"
 #include "../include/downloader.hpp"
 #include "../include/filemerger.hpp"
 
@@ -37,8 +39,13 @@ int main() {
     // ─────────────────────────────────────
     std::cout << "\n[STEP 2] Fetching file info...\n";
 
-    FileData fileData = FileInfo::fetch(url);
-    FileInfo::print(fileData);
+    //FileData fileData = FileInfo::fetch(url);
+    //FileInfo::print(fileData);
+    
+    FileInfoManager fileManager;
+
+    FileData fileData = fileManager.fetchFileInfo(url);
+    fileManager.printFileInfo(fileData);
 
     if (!fileData.isValid) {
         std::cerr << "\n❌ Could not fetch file info. Exiting.\n";
@@ -59,9 +66,10 @@ int main() {
     // ─────────────────────────────────────
     std::cout << "\n[STEP 3] Calculating chunks...\n";
 
-    auto chunks = ChunkCalculator::calculate(fileData.fileSize,
-                                              numThreads);
-    ChunkCalculator::print(chunks);
+    ChunkManager manager;
+
+    auto chunks = manager.divideIntoChunks(fileData.fileSize, numThreads);
+    manager.printChunks(chunks);
 
     std::cout << "\n✅ Step 3 Complete — Chunks Ready\n";
     std::cout << "\n Next Step: Download chunks using threads\n\n";

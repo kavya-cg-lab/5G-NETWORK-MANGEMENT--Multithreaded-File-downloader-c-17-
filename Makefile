@@ -5,9 +5,12 @@ LIBS = -lcurl
 SRC = src/main.cpp \
       src/validator.cpp \
       src/fileinfo.cpp \
+	  src/fileinfomanager.cpp \
       src/chunkcalculator.cpp \
+	  src/chunkmanager.cpp \
       src/downloader.cpp \
-      src/filemerger.cpp
+      src/filemerger.cpp 
+	  
 
 TARGET = downloader
 
