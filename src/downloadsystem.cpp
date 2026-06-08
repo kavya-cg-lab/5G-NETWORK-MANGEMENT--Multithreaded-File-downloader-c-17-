@@ -112,13 +112,15 @@ size_t Downloader::writeCallback(void* ptr, size_t size, size_t nmemb, void* use
 // ── SingleThreadDownloader ───────────────────────────────────────
 bool SingleThreadDownloader::download(const std::string& url,
                                       const std::vector<ChunkInfo>& chunks,
-                                      const std::string& outputName) {
+                                      const std::string& outputName,
+                                      ProgressTracker::ProgressCallback progressCallback) {
     (void)outputName;
     if (chunks.empty()) {
         std::cerr << "❌ No chunks for single-threaded download.\n";
         return false;
     }
     ProgressTracker tracker(chunks.front().chunkSize);
+    tracker.setProgressCallback(std::move(progressCallback));
     Downloader dl(url, chunks.front(), tracker);
     bool ok = dl.downloadChunk();
     tracker.printFinal();
@@ -128,7 +130,8 @@ bool SingleThreadDownloader::download(const std::string& url,
 // ── MultiThreadDownloader ────────────────────────────────────────
 bool MultiThreadDownloader::download(const std::string& url,
                                      const std::vector<ChunkInfo>& chunks,
-                                     const std::string& outputName) {
+                                     const std::string& outputName,
+                                     ProgressTracker::ProgressCallback progressCallback) {
     if (chunks.empty()) {
         std::cerr << "❌ No chunks for multi-threaded download.\n";
         return false;
@@ -138,6 +141,7 @@ bool MultiThreadDownloader::download(const std::string& url,
     for (const auto& c : chunks) totalBytes += c.chunkSize;
 
     ProgressTracker tracker(totalBytes);
+    tracker.setProgressCallback(std::move(progressCallback));
     std::vector<bool> results(chunks.size(), false);
     std::vector<std::function<void()>> tasks;
     tasks.reserve(chunks.size());

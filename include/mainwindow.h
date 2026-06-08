@@ -6,6 +6,7 @@
 #include <QProgressBar>
 #include <QLabel>
 #include <QSpinBox>
+#include <QRadioButton>
 #include <QThread>
 #include <memory>
 
@@ -35,6 +36,8 @@ private:
     QLineEdit *urlInput;
     QLineEdit *outputFileInput;
     QSpinBox *threadsSpinBox;
+    QRadioButton *autoRadioButton;
+    QRadioButton *manualRadioButton;
     QPushButton *browseButton;
     QPushButton *downloadButton;
     QPushButton *cancelButton;

@@ -70,9 +70,20 @@ void MainWindow::setupUI() {
     threadsSpinBox->setMinimum(1);
     threadsSpinBox->setMaximum(16);
     threadsSpinBox->setValue(4);
+    // Thread mode radio buttons: Auto (use calculator) or Manual (use spinbox)
+    autoRadioButton = new QRadioButton("Auto", this);
+    manualRadioButton = new QRadioButton("Manual", this);
+    autoRadioButton->setChecked(true);
+    // when Auto is selected, disable spinbox; when Manual selected, enable it
+    threadsSpinBox->setEnabled(false);
+    connect(manualRadioButton, &QRadioButton::toggled, [this](bool checked){
+        threadsSpinBox->setEnabled(checked);
+    });
     
     settingsLayout->addWidget(threadsLabel);
     settingsLayout->addWidget(threadsSpinBox);
+    settingsLayout->addWidget(autoRadioButton);
+    settingsLayout->addWidget(manualRadioButton);
     settingsLayout->addStretch();
     mainLayout->addWidget(settingsGroup);
 
@@ -163,11 +174,12 @@ void MainWindow::onDownloadClicked() {
     statusLabel->setText("Starting download...");
     progressBar->setValue(0);
     
-    // Pass 0 threads to use auto-calculator
-    int threads = threadsSpinBox->value();
-    if (threadsSpinBox->value() == 4) {
-        // If user hasn't explicitly changed it from default, use auto-calculator
-        threads = 0; // 0 means auto-calculate
+    // Determine threads: 0 means auto-calculate, otherwise use manual value
+    int threads = 0;
+    if (manualRadioButton->isChecked()) {
+        threads = threadsSpinBox->value();
+    } else {
+        threads = 0; // auto
     }
     
     QMetaObject::invokeMethod(downloadWorker, "startDownload", Qt::QueuedConnection,
@@ -244,7 +256,10 @@ void MainWindow::updateUIState(bool downloading) {
     urlInput->setEnabled(!downloading);
     outputFileInput->setEnabled(!downloading);
     browseButton->setEnabled(!downloading);
-    threadsSpinBox->setEnabled(!downloading);
+    // allow editing threads only when not downloading and Manual mode selected
+    threadsSpinBox->setEnabled(!downloading && manualRadioButton->isChecked());
     downloadButton->setEnabled(!downloading);
     cancelButton->setEnabled(downloading);
+    if (autoRadioButton) autoRadioButton->setEnabled(!downloading);
+    if (manualRadioButton) manualRadioButton->setEnabled(!downloading);
 }

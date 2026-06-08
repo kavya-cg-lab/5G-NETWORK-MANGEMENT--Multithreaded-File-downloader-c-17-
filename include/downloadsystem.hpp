@@ -51,21 +51,24 @@ public:
     virtual ~DownloadStrategy() = default;
     virtual bool download(const std::string& url,
                           const std::vector<ChunkInfo>& chunks,
-                          const std::string& outputName) = 0;
+                          const std::string& outputName,
+                          ProgressTracker::ProgressCallback progressCallback = {}) = 0;
 };
 
 class SingleThreadDownloader : public DownloadStrategy {
 public:
     bool download(const std::string& url,
                   const std::vector<ChunkInfo>& chunks,
-                  const std::string& outputName) override;
+                  const std::string& outputName,
+                  ProgressTracker::ProgressCallback progressCallback = {}) override;
 };
 
 class MultiThreadDownloader : public DownloadStrategy {
 public:
     bool download(const std::string& url,
                   const std::vector<ChunkInfo>& chunks,
-                  const std::string& outputName) override;
+                  const std::string& outputName,
+                  ProgressTracker::ProgressCallback progressCallback = {}) override;
 };
 
 class DownloaderFactory {

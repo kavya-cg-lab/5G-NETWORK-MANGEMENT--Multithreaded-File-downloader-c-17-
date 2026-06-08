@@ -24,6 +24,12 @@ void DownloadWorker::startDownload(const QString &url, const QString &outputFile
 
         // Create a new controller with the provided parameters
         controller = std::make_unique<MainController>(urlStr, threads, outputStr);
+        controller->setProgressCallback([this](long long downloaded,
+                                               long long total,
+                                               double speedKBps,
+                                               int etaSeconds) {
+            emit progressUpdated(downloaded, total, speedKBps, etaSeconds);
+        });
 
         // Initialize the system
         if (!controller->initializeSystem()) {

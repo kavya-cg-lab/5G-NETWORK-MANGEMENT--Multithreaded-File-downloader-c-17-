@@ -168,10 +168,15 @@
 MainController::MainController(std::string url, int threadCount, std::string outputName)
     : url(std::move(url)),
       threadCount(threadCount),
-      outputName(std::move(outputName)) {}
+      outputName(std::move(outputName)),
+      progressCallback(nullptr) {}
 
 MainController::~MainController() {
     curl_global_cleanup();
+}
+
+void MainController::setProgressCallback(ProgressTracker::ProgressCallback callback) {
+    progressCallback = std::move(callback);
 }
 
 bool MainController::initializeSystem() {
@@ -268,7 +273,7 @@ bool MainController::performDownload(const FileData& data, std::vector<ChunkInfo
         return false;
     }
 
-    bool success = downloader->download(url, chunks, outputName);
+    bool success = downloader->download(url, chunks, outputName, progressCallback);
 
     // Fallback: multi-thread failed → retry single-thread
     if (!success && threadCount > 1) {
@@ -283,7 +288,7 @@ bool MainController::performDownload(const FileData& data, std::vector<ChunkInfo
             UIManager::showFinalResult(false, "Failed to select fallback strategy.");
             return false;
         }
-        success = downloader->download(url, chunks, outputName);
+        success = downloader->download(url, chunks, outputName, progressCallback);
     }
 
     if (!success) UIManager::showFinalResult(false, "Download failed.");

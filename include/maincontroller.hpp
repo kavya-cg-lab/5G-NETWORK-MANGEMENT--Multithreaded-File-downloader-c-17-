@@ -18,6 +18,7 @@ public:
 
     bool initializeSystem();
     bool startDownload();
+    void setProgressCallback(ProgressTracker::ProgressCallback callback);
 
 private:
     bool validateInputs();
@@ -34,6 +35,7 @@ private:
     std::string url;
     int threadCount;
     std::string outputName;
+    ProgressTracker::ProgressCallback progressCallback;
 
     FileInfoManager fileInfoManager;
     ChunkManager chunkManager;
