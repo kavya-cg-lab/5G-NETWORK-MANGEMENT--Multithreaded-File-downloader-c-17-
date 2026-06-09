@@ -22,6 +22,7 @@ signals:
     void progressUpdated(long long downloaded, long long total, double speed, int eta);
     void downloadFinished(bool success, const QString &message);
     void downloadError(const QString &error);
+    void threadCountDetermined(int count);
 
 private:
     std::unique_ptr<MainController> controller;

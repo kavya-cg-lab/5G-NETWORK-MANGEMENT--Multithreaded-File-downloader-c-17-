@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <functional>
 
 #include "fileinfomanager.hpp"
 #include "chunkmanager.hpp"
@@ -19,6 +20,7 @@ public:
     bool initializeSystem();
     bool startDownload();
     void setProgressCallback(ProgressTracker::ProgressCallback callback);
+    void setThreadCountCallback(std::function<void(int)> callback);
 
 private:
     bool validateInputs();
@@ -40,4 +42,5 @@ private:
     FileInfoManager fileInfoManager;
     ChunkManager chunkManager;
     static constexpr int maxRetryCount = 3;
+    std::function<void(int)> threadCountCallback;
 };

@@ -45,6 +45,11 @@ void ProgressTracker::printFinal() const {
     double seconds = std::max(elapsed.count(), 0.001);
     double speed = totalBytes / seconds;
 
+    // Notify GUI callback if present so UI shows 100%/final sizes
+    if (progressCallback) {
+        progressCallback(totalBytes, totalBytes, speed / 1024.0, 0);
+    }
+
     std::cout << "\rDownloading: 100% (" << totalBytes << " / "
               << totalBytes << " bytes)"
               << " | Avg " << std::fixed << std::setprecision(1)

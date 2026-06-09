@@ -4,6 +4,16 @@
 #include <iostream>
 #include <cstdio>
 
+static std::atomic<bool> g_cancelFlag{false};
+
+void setGlobalCancel(bool value) {
+    g_cancelFlag.store(value);
+}
+
+bool isGlobalCancelled() {
+    return g_cancelFlag.load();
+}
+
 struct WriteContext {
     std::ofstream*   output;
     ProgressTracker* progress;
@@ -40,6 +50,12 @@ Downloader::Downloader(const std::string& url,
 
 bool Downloader::downloadChunk(int maxRetries) {
     for (int attempt = 1; attempt <= maxRetries; ++attempt) {
+
+        // Check for global cancellation before starting an attempt
+        if (isGlobalCancelled()) {
+            std::cerr << "⚠️  Download cancelled before attempt " << attempt << "\n";
+            return false;
+        }
 
         // Truncate/create fresh for each retry so partial data doesn't linger
         std::ofstream outputFile(chunk.tempFile,
@@ -78,6 +94,12 @@ bool Downloader::downloadChunk(int maxRetries) {
         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
         curl_easy_cleanup(curl);
 
+        // If cancellation occurred during transfer, abort without retry
+        if (isGlobalCancelled()) {
+            std::cerr << "⚠️  Download cancelled during attempt " << attempt << "\n";
+            return false;
+        }
+
         bool ok = (result == CURLE_OK) && (httpCode == 200 || httpCode == 206);
 
         if (ok) return true;
@@ -103,6 +125,9 @@ bool Downloader::downloadChunk(int maxRetries) {
 size_t Downloader::writeCallback(void* ptr, size_t size, size_t nmemb, void* userData) {
     auto* ctx = static_cast<WriteContext*>(userData);
     size_t total = size * nmemb;
+    if (g_cancelFlag.load()) {
+        return 0; // signal libcurl to abort
+    }
     ctx->output->write(static_cast<char*>(ptr), total);
     if (!*ctx->output) return 0;
     ctx->progress->addBytes(total);

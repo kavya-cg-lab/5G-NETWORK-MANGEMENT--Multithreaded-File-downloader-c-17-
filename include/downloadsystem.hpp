@@ -75,3 +75,7 @@ class DownloaderFactory {
 public:
     static std::unique_ptr<DownloadStrategy> createDownloader(int threadCount);
 };
+
+// Global cancellation control (simple cross-module token)
+void setGlobalCancel(bool value);
+bool isGlobalCancelled();

@@ -46,6 +46,7 @@ private:
     QLabel *speedLabel;
     QLabel *etaLabel;
     QLabel *downloadedLabel;
+    QLabel *autoThreadsLabel;
 
     // Worker and thread
     QThread *workerThread;

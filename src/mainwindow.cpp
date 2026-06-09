@@ -76,13 +76,18 @@ void MainWindow::setupUI() {
     autoRadioButton->setChecked(true);
     // when Auto is selected, disable spinbox; when Manual selected, enable it
     threadsSpinBox->setEnabled(false);
+    autoThreadsLabel = new QLabel("Auto threads: --", this);
+    autoThreadsLabel->setVisible(autoRadioButton->isChecked());
+
     connect(manualRadioButton, &QRadioButton::toggled, [this](bool checked){
         threadsSpinBox->setEnabled(checked);
+        if (autoThreadsLabel) autoThreadsLabel->setVisible(!checked);
     });
     
     settingsLayout->addWidget(threadsLabel);
     settingsLayout->addWidget(threadsSpinBox);
     settingsLayout->addWidget(autoRadioButton);
+    settingsLayout->addWidget(autoThreadsLabel);
     settingsLayout->addWidget(manualRadioButton);
     settingsLayout->addStretch();
     mainLayout->addWidget(settingsGroup);
@@ -141,7 +146,9 @@ void MainWindow::onBrowseClicked() {
 }
 
 void MainWindow::onDownloadClicked() {
-    if (urlInput->text().isEmpty()) {
+    // Trim whitespace and validate
+    QString urlText = urlInput->text().trimmed();
+    if (urlText.isEmpty()) {
         QMessageBox::warning(this, "Input Error", "Please enter a download URL");
         return;
     }
@@ -166,6 +173,9 @@ void MainWindow::onDownloadClicked() {
                 this, &MainWindow::onDownloadFinished);
         connect(downloadWorker, &DownloadWorker::downloadError,
                 this, &MainWindow::onDownloadError);
+        connect(downloadWorker, &DownloadWorker::threadCountDetermined, [this](int count){
+            if (autoThreadsLabel) autoThreadsLabel->setText(QString("Auto threads: %1").arg(count));
+        });
 
         workerThread->start();
     }
@@ -183,9 +193,11 @@ void MainWindow::onDownloadClicked() {
     }
     
     QMetaObject::invokeMethod(downloadWorker, "startDownload", Qt::QueuedConnection,
-        Q_ARG(QString, urlInput->text()),
+        Q_ARG(QString, urlText),
         Q_ARG(QString, outputFileInput->text()),
         Q_ARG(int, threads));
+    // update input field to trimmed value
+    urlInput->setText(urlText);
 }
 
 void MainWindow::onCancelClicked() {

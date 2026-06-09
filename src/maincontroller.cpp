@@ -179,6 +179,10 @@ void MainController::setProgressCallback(ProgressTracker::ProgressCallback callb
     progressCallback = std::move(callback);
 }
 
+void MainController::setThreadCountCallback(std::function<void(int)> callback) {
+    threadCountCallback = std::move(callback);
+}
+
 bool MainController::initializeSystem() {
     UIManager::showStepStart("SYSTEM INIT");
     CURLcode result = curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -239,6 +243,7 @@ bool MainController::fetchMetadata(FileData& data) {
             std::cout << "  ℹ️  Using " << threadCount << " threads"
                       << " for " << data.fileSize / (1024*1024) << " MB file\n";
         }
+        if (threadCountCallback) threadCountCallback(threadCount);
     }
 
     UIManager::showFinalResult(true, "Step 2 Complete — File Info Ready");

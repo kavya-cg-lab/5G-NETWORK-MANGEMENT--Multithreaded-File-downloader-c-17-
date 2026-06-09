@@ -13,6 +13,8 @@ DownloadWorker::~DownloadWorker() {
 void DownloadWorker::startDownload(const QString &url, const QString &outputFile, int threads) {
     try {
         shouldCancel = false;
+        // reset global cancel token when starting a new download
+        setGlobalCancel(false);
         
         std::string urlStr = url.toStdString();
         std::string outputStr = outputFile.toStdString();
@@ -30,6 +32,9 @@ void DownloadWorker::startDownload(const QString &url, const QString &outputFile
                                                int etaSeconds) {
             emit progressUpdated(downloaded, total, speedKBps, etaSeconds);
         });
+        controller->setThreadCountCallback([this](int count){
+            emit threadCountDetermined(count);
+        });
 
         // Initialize the system
         if (!controller->initializeSystem()) {
@@ -40,7 +45,12 @@ void DownloadWorker::startDownload(const QString &url, const QString &outputFile
         // Start the actual download
         // Note: The progress callback is automatically used by ProgressTracker
         if (!controller->startDownload()) {
-            emit downloadFinished(false, "Download failed. Please check the URL and try again.");
+            // If cancelled by user, emit a clear cancelled message
+            if (shouldCancel || isGlobalCancelled()) {
+                emit downloadFinished(false, "Download cancelled by user.");
+            } else {
+                emit downloadFinished(false, "Download failed. Please check the URL and try again.");
+            }
             return;
         }
 
@@ -53,7 +63,8 @@ void DownloadWorker::startDownload(const QString &url, const QString &outputFile
 
 void DownloadWorker::cancelDownload() {
     shouldCancel = true;
-    // TODO: Implement a cancellation mechanism in MainController
+    // set global cancel token so download threads and libcurl will abort
+    setGlobalCancel(true);
 }
 
 void DownloadWorker::onProgressUpdate(long long downloaded, long long total, double speedKBps, int etaSeconds) {
