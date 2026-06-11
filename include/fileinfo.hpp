@@ -1,36 +1,30 @@
 #pragma once
 #include <string>
+#include <sstream>
 
 // ─────────────────────────────────────────
 // Holds all info fetched from the server
 // ─────────────────────────────────────────
 struct FileData {
-    long long fileSize    = 0;
-    bool supportsRange    = false;
-    bool isValid          = false;
+    long long   fileSize      = 0;
+    bool        supportsRange = false;
+    bool        isValid       = false;
     std::string fileName;
+    std::string resolvedUrl;   // final URL after all redirects
 };
 
 // ─────────────────────────────────────────
-// Fetches file metadata from server
-// using HTTP HEAD request via libcurl
+// Fetches file metadata via a ranged GET
+// (single request that resolves redirects
+//  AND confirms range support in one shot)
 // ─────────────────────────────────────────
 class FileInfo {
 public:
-
-    // Main function — send HEAD request
-    // and return file metadata
     static FileData fetch(const std::string& url);
 
-    // Print file info to terminal
-    static void print(const FileData& data);
+    // numThreads shown in FILE INFORMATION box
+    static void print(const FileData& data, int numThreads);
 
 private:
-
-    // Curl write callback — discards body
-    // data (we only need headers here)
-    static size_t discardData(void* buffer,
-                               size_t size,
-                               size_t nmemb,
-                               void* userp);
+    static size_t discardData(void*, size_t, size_t, void*);
 };

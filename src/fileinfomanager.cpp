@@ -1,9 +1,17 @@
 #include "../include/fileinfomanager.hpp"
 
-FileData FileInfoManager::fetchFileInfo(const std::string& url) const {
-    return FileInfo::fetch(url);
+const FileData& FileInfoManager::fetchFileInfo(const std::string& url) {
+    data_  = FileInfo::fetch(url);
+    ready_ = true;
+    return data_;
 }
 
-void FileInfoManager::printFileInfo(const FileData& data) const {
-    FileInfo::print(data);
+const FileData& FileInfoManager::getFileInfo() const {
+    if (!ready_) throw std::logic_error("Call fetchFileInfo first");
+    return data_;
+}
+
+void FileInfoManager::printFileInfo(int numThreads) const {
+    if (!ready_) throw std::logic_error("Call fetchFileInfo first");
+    FileInfo::print(data_, numThreads);
 }

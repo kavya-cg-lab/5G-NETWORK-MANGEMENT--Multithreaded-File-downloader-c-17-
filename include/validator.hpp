@@ -2,23 +2,27 @@
 #include <string>
 
 // ─────────────────────────────────────────
-// Validates user input before any download
+// Validates user-supplied inputs before
+// any network or filesystem work begins
 // ─────────────────────────────────────────
 class Validator {
 public:
 
-    // Check if URL format is valid
+    // Returns true if URL starts with http:// or https://
+    // and contains at least one '.' after the scheme
     static bool isValidUrl(const std::string& url);
 
-    // Check if thread count is in range 1-16
-    static bool isValidThreadCount(int threads);
+    // Returns true if numThreads is between 1 and maxAllowed
+    static bool isValidThreadCount(int numThreads,
+                                   int maxAllowed = 64);
 
-    // Check if output filename is valid
-    static bool isValidOutputName(const std::string& name);
+    // Returns true if fileSize is strictly positive
+    static bool isValidFileSize(long long fileSize);
 
-    // Run all validations together
-    // Returns true only if everything is valid
-    static bool validateAll(const std::string& url,
-                            int threads,
-                            const std::string& outputName);
+    // Print a human-readable error for a bad URL
+    static void printUrlError(const std::string& url);
+
+    // Print a human-readable error for a bad thread count
+    static void printThreadCountError(int numThreads,
+                                      int maxAllowed = 64);
 };

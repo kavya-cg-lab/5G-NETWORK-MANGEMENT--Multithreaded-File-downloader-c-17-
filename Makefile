@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -Iinclude
+CXXFLAGS = -std=c++17 -Wall -Wextra -Iinclude -pthread
 LIBS = -lcurl
 
 SRC = src/main.cpp \
@@ -9,6 +9,7 @@ SRC = src/main.cpp \
       src/chunkcalculator.cpp \
 	  src/chunkmanager.cpp \
       src/downloader.cpp \
+	  src/progress_tracker.cpp \
       src/filemerger.cpp 
 	  
 
@@ -28,7 +29,8 @@ TEST_VALIDATOR_TARGET = test_validator
 
 TEST_DOWNLOADER_SRC = tests/test_downloader.cpp \
 		      src/downloader.cpp \
-                      src/chunkcalculator.cpp
+                      src/chunkcalculator.cpp \
+					  src/progress_tracker.cpp
 TEST_DOWNLOADER_TARGET = test_downloader
 
 TEST_FILEMERGER_SRC = tests/test_filemerger.cpp \

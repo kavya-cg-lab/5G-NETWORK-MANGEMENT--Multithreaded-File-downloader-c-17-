@@ -1,90 +1,55 @@
 #include "../include/validator.hpp"
 #include <iostream>
-#include <regex>
 
 // ─────────────────────────────────────────
-// Check URL starts with http:// or https://
+// URL must start with http:// or https://
+// and have content after the scheme+host
 // ─────────────────────────────────────────
 bool Validator::isValidUrl(const std::string& url) {
 
-    if (url.empty()) {
-        std::cerr << "Error: URL cannot be empty\n";
-        return false;
-    }
+    if (url.empty()) return false;
 
-    // Simple regex for http/https URL
-    std::regex urlPattern(
-        R"(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256})"
-        R"(\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/=]*))"
-    );
+    bool hasScheme = (url.rfind("http://",  0) == 0 ||
+                      url.rfind("https://", 0) == 0);
+    if (!hasScheme) return false;
 
-    if (!std::regex_match(url, urlPattern)) {
-        std::cerr << "Error: Invalid URL format\n";
-        std::cerr << "   Use: http://example.com/file.zip\n";
-        return false;
-    }
+    // Must have a dot somewhere after the scheme
+    size_t schemeEnd = url.find("//") + 2;
+    size_t dotPos    = url.find('.', schemeEnd);
+    if (dotPos == std::string::npos) return false;
+
+    // Must have something after the dot
+    if (dotPos + 1 >= url.size()) return false;
 
     return true;
 }
 
 // ─────────────────────────────────────────
-// Thread count must be between 1 and 16
+// Thread count must be in [1, maxAllowed]
 // ─────────────────────────────────────────
-bool Validator::isValidThreadCount(int threads) {
-
-    if (threads < 1 || threads > 16) {
-        std::cerr << "Error: Thread count must be 1-16\n";
-        std::cerr << "   You entered: " << threads << "\n";
-        return false;
-    }
-
-    return true;
+bool Validator::isValidThreadCount(int numThreads,
+                                   int maxAllowed) {
+    return (numThreads >= 1 && numThreads <= maxAllowed);
 }
 
 // ─────────────────────────────────────────
-// Output name must not be empty or have
-// illegal characters
+// File size must be positive
 // ─────────────────────────────────────────
-bool Validator::isValidOutputName(const std::string& name) {
-
-    if (name.empty()) {
-        std::cerr << "Error: Output filename cannot be empty\n";
-        return false;
-    }
-
-    // Check for illegal characters
-    std::string illegal = "/\\:*?\"<>|";
-    for (char c : illegal) {
-        if (name.find(c) != std::string::npos) {
-            std::cerr << "Error: Filename has illegal character: "
-                      << c << "\n";
-            return false;
-        }
-    }
-
-    return true;
+bool Validator::isValidFileSize(long long fileSize) {
+    return fileSize > 0;
 }
 
 // ─────────────────────────────────────────
-// Run all 3 validations at once
+// Error messages
 // ─────────────────────────────────────────
-bool Validator::validateAll(const std::string& url,
-                             int threads,
-                             const std::string& outputName) {
+void Validator::printUrlError(const std::string& url) {
+    std::cerr << "Invalid URL: \"" << url << "\"\n"
+              << "URL must start with http:// or https:// "
+                 "and contain a valid hostname.\n";
+}
 
-    std::cout << "\n================================\n";
-    std::cout << "       INPUT VALIDATION         \n";
-    std::cout << "================================\n";
-
-    bool urlOk     = isValidUrl(url);
-    bool threadOk  = isValidThreadCount(threads);
-    bool outputOk  = isValidOutputName(outputName);
-
-    if (urlOk)     std::cout << "URL      : " << url << "\n";
-    if (threadOk)  std::cout << "Threads  : " << threads << "\n";
-    if (outputOk)  std::cout << "Output   : " << outputName << "\n";
-
-    std::cout << "================================\n";
-
-    return urlOk && threadOk && outputOk;
+void Validator::printThreadCountError(int numThreads,
+                                      int maxAllowed) {
+    std::cerr << "Invalid thread count: " << numThreads << "\n"
+              << "Must be between 1 and " << maxAllowed << ".\n";
 }

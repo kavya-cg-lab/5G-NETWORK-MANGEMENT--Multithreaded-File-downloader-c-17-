@@ -1,27 +1,21 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <mutex>
 #include "chunkcalculator.hpp"
 
-// ─────────────────────────────────────────
-// Handles multithreaded downloading
-// ─────────────────────────────────────────
 class Downloader {
 public:
-
-    // Download all chunks using threads
-    static void downloadAll(const std::string& url,
+    // resolvedUrl must be the final URL after all redirects
+    // (obtained from FileData::resolvedUrl)
+    static bool downloadAll(const std::string& resolvedUrl,
                             const std::vector<ChunkInfo>& chunks);
 
 private:
-
-    // Worker function for one thread
-    static void downloadChunk(const std::string& url,
-                              const ChunkInfo& chunk);
-
-    // Write callback for curl → writes to file
-    static size_t writeData(void* buffer,
-                             size_t size,
-                             size_t nmemb,
+    static void   downloadChunk(const std::string& resolvedUrl,
+                                 const ChunkInfo& chunk);
+    static size_t writeData(void* buf, size_t size, size_t nmemb,
                              void* stream);
+    static std::vector<std::string> threadErrors_;
+    static std::mutex               errorMutex_;
 };
